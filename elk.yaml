@@ -1,0 +1,33 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    elk_user: deploy
+    elk_install_path: /opt/docker-elk
+    logstash_custom_filters: |
+      filter {
+        kv {
+          source => "message"
+        }
+      }
+    index_template_files:
+    - file1.json
+    - file2.json
+    dashboard_files:
+    - file3.json
+    - file4.json
+
+
+  # vars per host:
+  # elk_listen_ip
+  # kibana_enabled
+  # logstash_enabled
+
+  roles:
+  - elk
+  
+  handlers:
+  - name: Start ELK
+    command: docker-compose up -d
+    args:
+      chdir: "{{ elk_install_path }}"

@@ -1,0 +1,99 @@
+---
+- name: Clone docker-elk
+  git:
+    repo: "https://github.com/stefa2k/docker-elk"
+    dest: "{{ elk_install_path }}"
+    force: yes
+
+- name: Change file ownership and group of clone
+  file:
+    state: directory
+    path: "{{ elk_install_path }}"
+    owner: "{{ elk_user }}"
+    group: "{{ elk_user }}"
+    recurse: yes
+
+- name: Generate docker-compose file
+  template:
+    src: docker-compose.override.yaml.j2
+    dest: "{{ elk_install_path }}/docker-compose.yaml"
+    owner: "{{ elk_user }}"
+    group: "{{ elk_user }}"
+    mode: 0644
+
+- name: Generate logstash.conf file
+  template:
+    src: logstash.conf.j2
+    dest: "{{ elk_install_path }}/config/logstash/pipeline/logstash.conf"
+    owner: "{{ elk_user }}"
+    group: "{{ elk_user }}"
+    mode: 0644
+
+- name: Generate elasticsearch.yaml file
+  template:
+    src: elasticsearch.yaml.j2
+    dest: "{{ elk_install_path }}/config/elasticsearch.yaml"
+    owner: "{{ elk_user }}"
+    group: "{{ elk_user }}"
+    mode: 0644
+
+- name: Generate kibana.yaml file
+  template:
+    src: kibana.yaml.j2
+    dest: "{{ elk_install_path }}/config/kibana.yaml"
+    owner: "{{ elk_user }}"
+    group: "{{ elk_user }}"
+    mode: 0644
+
+- name: Start Elasticsearch
+  shell: "docker-compose up -d elasticsearch"
+  args:
+    chdir: "{{ elk_install_path }}"
+
+- name: Wait for elasticsearch to build cluster
+  uri:
+    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:9200/_cluster/health?wait_for_nodes={{ inventory_hostname|length }}&timeout=10s"
+  register: elastic_cluster_status
+  until: elastic_cluster_status.status == 200
+  retries: 360
+  delay: 1
+
+- name: Create index templates
+  uri:
+    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:9200/
+    method: PUT
+    body_format: json
+    body: "{{ item }}"
+  with_file: "{{ index_template_files }}"
+  run_once: yes
+  when: index_template_files is defined
+
+- name: Start Kibana
+  shell: "docker-compose up -d kibana"
+  args:
+    chdir: "{{ elk_install_path }}"
+  when: hostvars[inventory_hostname].kibana_enabled
+
+- name: Wait for Kibana to start up
+  uri:
+    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:5601/api/status"
+  register: kibana_status
+  until: kibana_status.status == 200 and kibana_status.json.status.overall.state == "green"
+  retries: 360
+  delay: 1
+  when: hostvars[inventory_hostname].kibana_enabled
+
+- name: Create dashboards
+  uri:
+    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:5601/api/kibana/dashboards/import?exclude=index-pattern"
+    method: POST
+    body_format: json
+    body: "{{ item }}"
+  with_file: "{{ dashboard_files }}"
+  when: hostvars[inventory_hostname].kibana_enabled and dashboard_files is defined
+
+- name: Start Logstash
+  shell: "docker-compose up -d logstash"
+  args:
+    chdir: "{{ elk_install_path }}"
+  when: hostvars[inventory_hostname].logstash_enabled

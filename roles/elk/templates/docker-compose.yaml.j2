@@ -1,0 +1,68 @@
+version: "3.7"
+
+x-logging: &logging
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "10"
+            max-size: "100m"
+
+services:
+    elastic:
+        container_name: elastic
+        image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+        restart: on-failure
+        hostname: elastic
+        ports:
+            - {{hostvars[inventory_hostname].elk_listen_ip}}:9200:9200
+            - {{hostvars[inventory_hostname].elk_listen_ip}}:9300:9300
+        environment:
+            ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+{% if ansible_play_hosts | length == 1 %}
+            discovery.type: single-node
+{% else %}
+            discovery.seed_hosts:
+{% for host in ansible_play_hosts %}
+{% if host != inventory_hostname %}
+                - {{hostvars[host].elk_listen_ip}}
+{% endif %}
+{% endfor %}
+{% endif %}
+        volumes:
+            - ./config/elasticsearch.yaml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+            - elasticsearch:/usr/share/elasticsearch/data
+        <<: *logging
+{% if hostvars[inventory_hostname].logstash_enabled == true %}
+    logstash:
+        container_name: logstash
+        image: docker.elastic.co/logstash/logstash:${ELK_VERSION}
+        restart: on-failure
+        hostname: logstash
+        depends_on:
+            - elastic
+        ports:
+            - {{hostvars[inventory_hostname].elk_listen_ip}}:5044:5044
+        environment:
+            LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+        volumes:
+            - ./config/logstash/logstash.yaml:/usr/share/logstash/config/logstash.yml:ro
+            - ./config/logstash/pipeline:/usr/share/logstash/pipeline:ro
+        <<: *logging
+{% endif %}
+{% if hostvars[inventory_hostname].kibana_enabled == true %}
+    kibana:
+        container_name: kibana
+        image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+        restart: on-failure
+        hostname: kibana
+        depends_on:
+            - elastic
+        ports:
+            - {{hostvars[inventory_hostname].elk_listen_ip}}:5601:5601
+        volumes:
+            - ./config/kibana.yaml:/usr/share/kibana/config/kibana.yml:ro
+        <<: *logging
+{% endif %}
+
+volumes:
+    elasticsearch:
