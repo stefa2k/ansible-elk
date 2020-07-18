@@ -4,6 +4,7 @@
     repo: "https://github.com/stefa2k/docker-elk"
     dest: "{{ elk_install_path }}"
     force: yes
+  become: yes
 
 - name: Change file ownership and group of clone
   file:
@@ -12,6 +13,7 @@
     owner: "{{ elk_user }}"
     group: "{{ elk_user }}"
     recurse: yes
+  become: yes
 
 - name: Generate docker-compose file
   template:
