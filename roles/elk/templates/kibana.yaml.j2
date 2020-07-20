@@ -1,4 +1,4 @@
 server.name: kibana
 server.host: "0"
-elasticsearch.hosts: '[ {% for host in ansible_play_hosts %}"{{host}}"{% if not loop.last %}, {% endif %}{% endfor %} ]'
+elasticsearch.hosts: '[ {% for host in ansible_play_hosts %}"http://{{host}}:9200"{% if not loop.last %}, {% endif %}{% endfor %} ]'
 xpack.monitoring.ui.container.elasticsearch.enabled: false
