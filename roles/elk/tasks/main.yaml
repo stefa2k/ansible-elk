@@ -6,6 +6,7 @@
     update_cache: yes
   loop: 
   - git
+  become: yes
 
 - name: Clone docker-elk
   git:
