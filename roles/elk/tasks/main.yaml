@@ -26,7 +26,7 @@
 
 - name: Generate docker-compose file
   template:
-    src: docker-compose.override.yaml.j2
+    src: docker-compose.yaml.j2
     dest: "{{ elk_install_path }}/docker-compose.yaml"
     owner: "{{ elk_user }}"
     group: "{{ elk_user }}"
