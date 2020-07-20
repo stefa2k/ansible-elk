@@ -1,5 +1,5 @@
 cluster.name: "docker-cluster"
-cluster.initial_master_nodes: [{% for host in (ansible_play_hosts|reject('search',inventory_hostname)|list) %}{% if not loop.first %},{% endif %}"{{hostvars[host].elk_listen_ip}}"{% endif %}{% endfor %}]
+cluster.initial_master_nodes: [{% for host in (ansible_play_hosts|reject('search',inventory_hostname)|list) %}{% if not loop.first %},{% endif %}"{{hostvars[host].elk_listen_ip}}"{% endfor %}]
 
 network.bind_host: 0.0.0.0
 network.publish_host: {{hostvars[inventory_hostname].elk_listen_ip}}
