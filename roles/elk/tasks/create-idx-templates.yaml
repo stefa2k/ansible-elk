@@ -1,0 +1,11 @@
+---
+- name: Create index templates
+  uri:
+    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:9200/_index_template/template_{{ my_idx }}"
+    method: PUT
+    body_format: json
+    body: "{{ item }}"
+  with_file: "{{ index_template_files }}"
+  loop_control:
+    index_var: my_idx
+  run_once: yes
