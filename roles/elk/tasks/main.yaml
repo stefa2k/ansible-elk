@@ -8,6 +8,13 @@
   - git
   become: yes
 
+- name: Set correct vm.max_map_count
+  sysctl:
+    name: vm.max_map_count
+    value: '262145'
+    state: present
+    sysctl_set: yes
+
 - name: Clone docker-elk
   git:
     repo: "https://github.com/stefa2k/docker-elk"
