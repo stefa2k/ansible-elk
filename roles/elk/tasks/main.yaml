@@ -1,4 +1,12 @@
 ---
+- name: Install required system packages
+  apt: 
+    name: "{{ item }}" 
+    state: latest 
+    update_cache: yes
+  loop: 
+  - git
+
 - name: Clone docker-elk
   git:
     repo: "https://github.com/stefa2k/docker-elk"
