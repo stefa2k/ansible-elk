@@ -14,6 +14,7 @@
     value: '262145'
     state: present
     sysctl_set: yes
+  become: yes
 
 - name: Clone docker-elk
   git:
