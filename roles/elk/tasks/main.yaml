@@ -62,7 +62,7 @@
     mode: 0644
 
 - name: Start Elasticsearch
-  shell: "docker-compose up -d elasticsearch"
+  shell: "docker-compose up -d elastic"
   args:
     chdir: "{{ elk_install_path }}"
 
