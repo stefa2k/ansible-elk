@@ -92,7 +92,7 @@
   loop_control:
     index_var: my_idx
   run_once: yes
-  when: index_template_files is defined
+  when: index_template_files | length > 0
 
 - name: Start Kibana
   shell: "docker-compose up -d kibana"
@@ -116,7 +116,7 @@
     body_format: json
     body: "{{ item }}"
   with_file: "{{ dashboard_files }}"
-  when: hostvars[inventory_hostname].kibana_enabled and dashboard_files is defined
+  when: hostvars[inventory_hostname].kibana_enabled and dashboard_files | length > 0
 
 - name: Start Logstash
   shell: "docker-compose up -d logstash"
