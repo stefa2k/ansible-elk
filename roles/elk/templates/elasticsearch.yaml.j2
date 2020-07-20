@@ -1,4 +1,4 @@
 cluster.name: "docker-cluster"
-network.host: 0.0.0.0
+network.host: {{hostvars[inventory_hostname].elk_listen_ip}}
 
 xpack.license.self_generated.type: basic
