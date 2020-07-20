@@ -21,7 +21,7 @@ services:
 {% if ansible_play_hosts | length == 1 %}
             discovery.type: single-node
 {% else %}
-            discovery.seed_hosts: "[{% for host in ansible_play_hosts %}{% if host != inventory_hostname %}\"{{hostvars[host].elk_listen_ip}}\"{% if not loop.last %}, {% endif %}{% endif %}{% endfor %}]"
+            discovery.seed_hosts: "[{% for host in ansible_play_hosts %}{% if host != inventory_hostname %}{% if not loop.first %}, {% endif %}\"{{hostvars[host].elk_listen_ip}}\"{% endif %}{% endfor %}]"
 {% endif %}
         volumes:
             - ./config/elasticsearch.yaml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
