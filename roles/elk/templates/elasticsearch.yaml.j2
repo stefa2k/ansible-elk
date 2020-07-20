@@ -6,6 +6,4 @@ network.publish_host: {{hostvars[inventory_hostname].elk_listen_ip}}
 node.master: {{ hostvars[inventory_hostname].elk_node_master | default('yes') }}
 node.data: {{ hostvars[inventory_hostname].elk_node_data | default('yes') }}
 
-discovery.zen.ping.unicast.hosts: [{% for host in ansible_play_hosts %}{% if host != inventory_hostname %}{% if not loop.first %},{% endif %}"{{hostvars[host].elk_listen_ip}}"{% endif %}{% endfor %}]
-
 xpack.license.self_generated.type: basic
