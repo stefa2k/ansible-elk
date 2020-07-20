@@ -76,7 +76,7 @@
 
 - name: Wait for elasticsearch to build cluster
   uri:
-    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:9200/_cluster/health?wait_for_nodes={{ inventory_hostname|length }}&timeout=10s"
+    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:9200/_cluster/health?wait_for_nodes={{ ansible_play_hosts|length }}&timeout=10s"
   register: elastic_cluster_status
   until: elastic_cluster_status.status == 200
   retries: 360
