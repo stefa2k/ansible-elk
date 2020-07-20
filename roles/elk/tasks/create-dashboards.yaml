@@ -1,0 +1,9 @@
+---
+- name: Create dashboards
+  uri:
+    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:5601/api/kibana/dashboards/import?exclude=index-pattern"
+    method: POST
+    body_format: json
+    body: "{{ item }}"
+  with_file: "{{ dashboard_files }}"
+  when: hostvars[inventory_hostname].kibana_enabled

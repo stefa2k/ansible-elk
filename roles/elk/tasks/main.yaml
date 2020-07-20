@@ -101,14 +101,9 @@
   delay: 1
   when: hostvars[inventory_hostname].kibana_enabled
 
-- name: Create dashboards
-  uri:
-    url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:5601/api/kibana/dashboards/import?exclude=index-pattern"
-    method: POST
-    body_format: json
-    body: "{{ item }}"
-  with_file: "{{ dashboard_files }}"
-  when: hostvars[inventory_hostname].kibana_enabled
+- name: Include dashboards
+  include_tasks: "create-dashboards.yaml"
+  when: dashboard_files is defined
 
 - name: Start Logstash
   shell: "docker-compose up -d logstash"
