@@ -82,18 +82,12 @@
   retries: 360
   delay: 1
 
-- name: index_template_files
-  debug:
-    msg: "{{ index_template_files }}: {{ index_template_files | length }}"
-
-
 - name: Create index templates
   uri:
     url: "http://{{ hostvars[inventory_hostname].elk_listen_ip }}:9200/_index_template/template_{{ my_idx }}"
     method: PUT
     body_format: json
     body: "{{ item }}"
-  when: item | length > 0
   with_file: "{{ index_template_files }}"
   loop_control:
     index_var: my_idx
@@ -120,9 +114,8 @@
     method: POST
     body_format: json
     body: "{{ item }}"
-  when: item | length > 0
   with_file: "{{ dashboard_files }}"
-
+  when: hostvars[inventory_hostname].kibana_enabled
 
 - name: Start Logstash
   shell: "docker-compose up -d logstash"

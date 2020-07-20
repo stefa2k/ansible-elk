@@ -9,12 +9,12 @@
           source => "message"
         }
       }
-    index_template_files:
-    - file1.json
-    - file2.json
-    dashboard_files:
-    - file3.json
-    - file4.json
+    #index_template_files:
+    #- file1.json
+    #- file2.json
+    #dashboard_files:
+    #- file3.json
+    #- file4.json
 
 
   # vars per host:
