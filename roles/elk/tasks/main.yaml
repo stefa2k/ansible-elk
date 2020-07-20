@@ -24,6 +24,11 @@
     recurse: yes
   become: yes
 
+- name: Shutdown all services in case this is a reinstall
+  shell: "docker-compose down"
+  args:
+    chdir: "{{ elk_install_path }}"
+
 - name: Generate docker-compose file
   template:
     src: docker-compose.yaml.j2
