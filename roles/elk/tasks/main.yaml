@@ -82,6 +82,10 @@
   retries: 360
   delay: 1
 
+- name: index_template_files
+  debug:
+    msg: "{{ index_template_files }}: {{ index_template_files | length }}"
+
 - name: Create index templates
   block:
   - uri:
