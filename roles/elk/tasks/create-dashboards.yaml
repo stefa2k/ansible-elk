@@ -5,5 +5,7 @@
     method: POST
     body_format: json
     body: "{{ item }}"
+    headers:
+      kbn-xsrf: "ansible-elk"
   with_file: "{{ dashboard_files }}"
   when: hostvars[inventory_hostname].kibana_enabled
