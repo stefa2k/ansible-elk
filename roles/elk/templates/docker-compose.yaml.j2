@@ -37,6 +37,7 @@ services:
             - elastic
         ports:
             - {{hostvars[inventory_hostname].elk_listen_ip}}:5044:5044
+            - {{hostvars[inventory_hostname].elk_listen_ip}}:9600:9600
         environment:
             LS_JAVA_OPTS: "-Xmx256m -Xms256m"
         volumes:
