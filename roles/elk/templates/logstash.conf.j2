@@ -11,6 +11,6 @@ input {
 
 output {
         elasticsearch {
-                hosts => [{% for host in ansible_play_hosts %}"{{{{hostvars[host].elk_listen_ip}}:9200}}"{% if not loop.last %}, {% endif %}{% endfor %}]
+                hosts => [{% for host in ansible_play_hosts %}"{{hostvars[host].elk_listen_ip}}:9200"{% if not loop.last %}, {% endif %}{% endfor %}]
         }
 }
