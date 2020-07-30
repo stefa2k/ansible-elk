@@ -1,0 +1,12 @@
+---
+- name: Stop services
+  shell: "docker-compose stop {{item}}"
+  args:
+    chdir: "{{ elk_install_path }}"
+  with_items: "{{ elk_restart_services }}"
+
+- name: Start services
+  shell: "docker-compose up -d {{item}}"
+  args:
+    chdir: "{{ elk_install_path }}"
+  with_items: "{{ elk_restart_services }}"
