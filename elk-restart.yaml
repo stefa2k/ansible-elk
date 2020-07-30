@@ -3,7 +3,7 @@
   vars:
     elk_install_path: /opt/docker-elk
     elk_restart_services:
-	- logstash
+    - logstash
 
   roles:
   - elk-restart
