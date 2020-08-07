@@ -17,7 +17,7 @@ services:
             - {{hostvars[inventory_hostname].elk_listen_ip}}:9200:9200
             - {{hostvars[inventory_hostname].elk_listen_ip}}:9300:9300
         environment:
-            ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+            ES_JAVA_OPTS: "-Xmx512m -Xms512m"
 {% if ansible_play_hosts | length == 1 %}
             discovery.type: single-node
 {% else %}
